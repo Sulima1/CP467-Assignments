@@ -50,3 +50,31 @@ BicubicImage = cv.resize(image, resizedDimensions, cv.INTER_CUBIC)
 
 cv.imwrite("Assignment 1\outputs\cameraman_bicubic.tif", BicubicImage)
 
+
+
+#Point Operations
+
+#1 
+
+image = cv.imread("Assignment 1\Images\cameraman.tif")
+
+#conert image to array of pixels
+pixelArr = np.array(image)
+
+#subtract each pixle value from maximum to get negative
+pixelArr = 255 - pixelArr
+
+cv.imwrite("Assignment 1\outputs\cameraman_negative.tif", pixelArr)
+
+
+#2 
+
+image = cv.imread("Assignment 1\outputs\cameraman_negative.tif")
+
+#convert the image into a np array again
+pixelArr = np.array(image)
+
+#apply power transformation operation
+pixelArr = 2 * (pixelArr**1)
+
+cv.imwrite("Assignment 1\outputs\cameraman_power.tif", pixelArr)
