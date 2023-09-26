@@ -1,7 +1,11 @@
 import cv2 as cv
 import numpy as np
 
-#Image Interpolation
+"""
+-----------------------------------
+Image Interpolation
+-----------------------------------
+"""
 #1
 
 image = cv.imread("Assignment 1\Images\cameraman.tif")
@@ -25,18 +29,42 @@ cv.imwrite("Assignment 1\outputs\cameraman_rescaled.tif", resizedImage)
 
 image = cv.imread("Assignment 1\outputs\cameraman_rescaled.tif")
 
+image = cv.cvtColor(image, cv.COLOR_RGB2GRAY)
+
 imageHeight = image.shape[0]
 imageWidth = image.shape[1]
 
-upHeight = imageHeight * 4
-upWidth = imageWidth * 4
+upHeight = imageHeight * 2
+upWidth = imageWidth * 2
 resizedDimensions = (upHeight, upWidth)
 
 #Nearest neighbor interpolation
 
-NNImage = cv.resize(image, resizedDimensions, cv.INTER_NEAREST)
+#scaling constants (scale = desiredSize / startingSize) 
 
-cv.imwrite("Assignment 1\outputs\cameraman_nearest.tif", NNImage)
+scaleOne = imageWidth/upWidth
+scaleTwo = imageHeight/imageWidth
+
+xScale = upWidth / (imageWidth - 1)
+yScale = upHeight / (imageHeight - 1)
+
+outputMatrix = np.zeros((upWidth, upHeight))
+
+print(image[1,1])
+for i in range(0, upHeight - 1):
+    for j in range(0, upWidth - 1):
+        outputMatrix[i+1, j+1] = image[1 + int(np.round(i / xScale)), 1 + int(np.round(j / yScale))]
+
+
+#Write the output matrix to image
+
+cv.imwrite("Assignment 1\outputs\cameraman_nearest.png", outputMatrix)
+
+
+#high level solution
+#NNImage = cv.resize(image, resizedDimensions, cv.INTER_NEAREST)
+
+#cv.imwrite("Assignment 1\outputs\cameraman_nearest.tif", NNImage)
 
 #Bilinear interpolation
 
@@ -51,8 +79,11 @@ BicubicImage = cv.resize(image, resizedDimensions, cv.INTER_CUBIC)
 cv.imwrite("Assignment 1\outputs\cameraman_bicubic.tif", BicubicImage)
 
 
-
-#Point Operations
+"""
+-----------------------------------
+Point Operations
+-----------------------------------
+"""
 
 #1 
 
