@@ -42,12 +42,10 @@ resizedDimensions = (upHeight, upWidth)
 
 #scaling constants (scale = desiredSize / startingSize) 
 
-scaleOne = imageWidth/upWidth
-scaleTwo = imageHeight/imageWidth
-
 xScale = upWidth / (imageWidth - 1)
 yScale = upHeight / (imageHeight - 1)
 
+#matrix of 0s to be filled with pixel values
 outputMatrix = np.zeros((upWidth, upHeight))
 
 print(image[1,1])
@@ -60,11 +58,6 @@ for i in range(0, upHeight - 1):
 
 cv.imwrite("Assignment 1\outputs\cameraman_nearest.png", outputMatrix)
 
-
-#high level solution
-#NNImage = cv.resize(image, resizedDimensions, cv.INTER_NEAREST)
-
-#cv.imwrite("Assignment 1\outputs\cameraman_nearest.tif", NNImage)
 
 #Bilinear interpolation
 
