@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
+from queue import Queue
 
 def AverageSmoothingLowLevel(image, kernel):
     
@@ -93,6 +94,39 @@ def SobelLowLevel(image, xSobel, ySobel):
 
     cv.imwrite("Assignment 2\outputs\lowlevel_sobel_cameraman.png", sharpenedImage)
 
+def groupAdjacentPixels(image):
+    edges = cv.Canny(image, threshold1=100, threshold2=200)
+    height, width = image.shape[:2]
+    labels = np.zeros((height, width), dtype=int)
+    curlab = 1
+    connectivity = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+
+    for i in range(height):
+        for j in range(width):
+            if edges[i, j] == 255 and labels[i, j] == 0:
+                queue = Queue()
+                queue.put((i, j))
+                labels[i, j] = curlab
+
+                while not queue.empty():
+                    current_pixel = queue.get()
+                    x, y = current_pixel
+
+                    for dx, dy in connectivity:
+                        nx, ny = x + dx, y + dy
+
+                        if isValid(height, width, nx, ny) and edges[nx, ny] == 255 and labels[nx, ny] == 0:
+                            labels[nx, ny] = curlab
+                            queue.put((nx, ny))
+
+                curlab += 1
+
+    return labels
+
+def isValid(height, width, x,y):
+    return 0 <= x < height and 0 <= y < width
+
+
 def main():
     #Question 1a: Average Smoothing filter
     kernel = [[1/9,1/9,1/9],
@@ -136,7 +170,27 @@ def main():
     output = cv.Sobel(image,cv.CV_64F,1,0,ksize=3) + cv.Sobel(image,cv.CV_64F,0,1,ksize=3)
     cv.imwrite("Assignment 2\outputs\highlevel_sobel_cameraman.png", output)
 
-    
+    #Question 3
+
+    #Marr-Hildreth
+    image = cv.imread("Assignment 2\outputs\highlevel_gaussian_cameraman.png")
+    output = cv.Laplacian(image, cv.CV_64F)
+    cv.imwrite("Assignment 2\outputs\marrHildreth_cameraman.png", output)
+
+    #Canny edge detector
+    image = cv.imread("Assignment 2\cameraman.tif")
+    image = cv.cvtColor(src=image, code=cv.COLOR_BGR2GRAY)
+
+    output = cv.Canny(image, 100, 200)
+    cv.imwrite("Assignment 2\outputs\canny_cameraman.png", output)
+
+    image = cv.imread("Assignment 2\outputs\marrHildreth_cameraman.png")
+    labels = groupAdjacentPixels(image)
+    cv.imwrite("Assignment 2\outputs\EdgeDetection3a.png", labels)
+
+    image = cv.imread("Assignment 2\outputs\canny_cameraman.png")
+    labels = groupAdjacentPixels(image)
+    cv.imwrite("Assignment 2\outputs\EdgeDetection3b.png", labels)
 
 if __name__ == '__main__':
     main()
